@@ -15,13 +15,36 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QRadioButton" name="radioButton">
-     <property name="text">
-      <string>RadioButton</string>
+    <widget class="QTreeWidget" name="treeWidget">
+     <property name="indentation">
+      <number>15</number>
      </property>
-     <attribute name="buttonGroup">
-      <string notr="true">buttonGroup</string>
+     <property name="rootIsDecorated">
+      <bool>false</bool>
+     </property>
+     <attribute name="headerVisible">
+      <bool>false</bool>
      </attribute>
+     <column>
+      <property name="text">
+       <string>New Column</string>
+      </property>
+     </column>
+     <item>
+      <property name="text">
+       <string>aaa</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>bbb</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>ccc</string>
+       </property>
+      </item>
+     </item>
     </widget>
    </item>
    <item>
@@ -29,29 +52,6 @@
      <property name="text">
       <string>PushButton</string>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="toolButton">
-     <property name="text">
-      <string>...</string>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextOnly</enum>
-     </property>
-     <property name="arrowType">
-      <enum>Qt::DownArrow</enum>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QRadioButton" name="radioButton_2">
-     <property name="text">
-      <string>RadioButton</string>
-     </property>
-     <attribute name="buttonGroup">
-      <string notr="true">buttonGroup</string>
-     </attribute>
     </widget>
    </item>
   </layout>

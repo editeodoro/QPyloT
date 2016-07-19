@@ -86,8 +86,8 @@ class Plot2DWindow(QMainWindow, Ui_QPyLOTWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    frame = StartWindow()
- #   frame = Plot1DWindow()
+#    frame = StartWindow()
+    frame = Plot1DWindow()
     frame.show()
     app.exec_()
 	

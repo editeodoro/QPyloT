@@ -88,9 +88,6 @@ class Filein_Widget(QtWidgets.QWidget):
                     if self.parent is not None: 
                         self.parent.grancazzo() # Send a signal to parent object self.FileChanged()
 
-class Param ():
-    def __init__(self, filename):
-        fname = filename
 
 class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
     def __init__(self, parent=None):
@@ -107,7 +104,12 @@ class Plot1DWindow(QMainWindow, Ui_Plot1D_Window):
         self.Main_gridLayout.addWidget(self.file_inp,0,0,1,0)
         self.plot_tab = Plot_Tab(self)
         self.Main_gridLayout.addWidget(self.plot_tab,1,2)
-
+        
+        
+        self.treeWidget.itemSelectionChanged.connect(self.Diocare)
+        
+    def Diocare (self):
+        print (self.treeWidget.treePosition())
         
         # Connect all the slots to the correspondent functions
         #self.File_lineEdit.editingFinished.connect(self.FileChanged)
@@ -155,4 +157,4 @@ class Plot1DWindow(QMainWindow, Ui_Plot1D_Window):
         
         
         
-        
+        r
