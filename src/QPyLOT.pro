@@ -17,9 +17,11 @@ SOURCES += main.cpp\
 
 HEADERS  += qpylotwindow.h
 
-FORMS    += qpylotwindow.ui\
-            plot1d_window.ui\
-            start_window.ui
+FORMS    += UIs/qpylotwindow.ui\
+            UIs/plot1d_window.ui\
+            UIs/start_window.ui\
+            UIs/plot1d_tabw.ui\
+            UIs/plot1d.ui
 
 DISTFILES += \
     main.py

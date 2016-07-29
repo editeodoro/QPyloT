@@ -103,13 +103,14 @@ class Plot1DWindow(QMainWindow, Ui_Plot1D_Window):
         self.file_inp = Filein_Widget(self)
         self.Main_gridLayout.addWidget(self.file_inp,0,0,1,0)
         self.plot_tab = Plot_Tab(self)
-        self.Main_gridLayout.addWidget(self.plot_tab,1,2)
+        #self.Main_gridLayout.addWidget(self.plot_tab,1,2)
         
+        self.stackedWidget.insertWidget(6,self.plot_tab)
         
-        self.treeWidget.itemSelectionChanged.connect(self.Diocare)
+        self.listWidget.currentRowChanged[int].connect(self.Diocare)
         
-    def Diocare (self):
-        print (self.treeWidget.treePosition())
+    def Diocare (self,idx):
+        self.stackedWidget.setCurrentIndex(idx)
         
         # Connect all the slots to the correspondent functions
         #self.File_lineEdit.editingFinished.connect(self.FileChanged)
