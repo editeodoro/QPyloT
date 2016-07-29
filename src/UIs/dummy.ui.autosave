@@ -21,7 +21,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item alignment="Qt::AlignLeft">
     <widget class="QToolButton" name="MarkColor_toolButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -29,8 +29,20 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <property name="minimumSize">
+      <size>
+       <width>49</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>cazzo</string>
+     </property>
      <property name="popupMode">
       <enum>QToolButton::InstantPopup</enum>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextBesideIcon</enum>
      </property>
     </widget>
    </item>
@@ -80,9 +92,6 @@
      </property>
      <property name="singleStep">
       <double>0.100000000000000</double>
-     </property>
-     <property name="value">
-      <double>1.000000000000000</double>
      </property>
     </widget>
    </item>

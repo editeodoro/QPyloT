@@ -96,7 +96,7 @@ class ColorPicker (QtWidgets.QWidget):
 #              3) a spinBox with the value of transparency (alpha)
 # The selected color is stored in the variable 'color'
 
-    def __init__(self,parent=None,color='#FFFFFF'):
+    def __init__(self,parent=None,color='#FFFFFF',longcol=True):
         QtWidgets.QWidget.__init__(self)        
         
         # The current selected color (initialized here)
@@ -127,7 +127,7 @@ class ColorPicker (QtWidgets.QWidget):
         self.alpha_spinBox.setSizePolicy(sizePolicy)
 
         # Some properties
-        self.color_toolButton.setAutoRaise(True)
+        #self.color_toolButton.setAutoRaise(True)
         self.hex_lineEdit.setMaxLength(7)
         self.alpha_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.alpha_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)        
@@ -139,10 +139,12 @@ class ColorPicker (QtWidgets.QWidget):
         
         self.Layout.addWidget(self.color_label)
         self.Layout.addWidget(self.color_toolButton)
-        self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignRight)
-        self.Layout.addWidget(self.hex_lineEdit)
-        self.Layout.addWidget(self.alpha_label, 0, QtCore.Qt.AlignRight)
-        self.Layout.addWidget(self.alpha_spinBox)
+        
+        if longcol:
+            self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignRight)
+            self.Layout.addWidget(self.hex_lineEdit)
+            self.Layout.addWidget(self.alpha_label, 0, QtCore.Qt.AlignRight)
+            self.Layout.addWidget(self.alpha_spinBox)
         
         # Slots
         self.color_toolButton.clicked.connect(self.openColorDialog)
@@ -172,11 +174,12 @@ class ColorPicker (QtWidgets.QWidget):
     def changeToolButtonColor (self, col):
         # Change the color of the toolButton
         if col.isValid():
-            px = QtGui.QPixmap(20, 20)
-            px.fill(col)
-            icon = QtGui.QIcon()
-            icon.addPixmap(px)
-            self.color_toolButton.setIcon(icon)
+            #px = QtGui.QPixmap(20, 20)
+            #px.fill(col)
+            #icon = QtGui.QIcon()
+            #icon.addPixmap(px)
+            #self.color_toolButton.setIcon(icon)
+            self.color_toolButton.setStyleSheet("background-color: "+self.color.name())
                 
         
 class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
