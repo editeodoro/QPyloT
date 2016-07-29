@@ -18,6 +18,7 @@ class Filein_Widget(QtWidgets.QWidget):
         # GUI elements and settings
         self.parent = parent
         self.Layout = QtWidgets.QGridLayout(self)
+        self.Layout.setContentsMargins(2,0,2,0)
         
         self.File_label = QtWidgets.QLabel("  File (ASCII or FITS table)  ")
         self.Layout.addWidget(self.File_label,0,0)
@@ -88,11 +89,105 @@ class Filein_Widget(QtWidgets.QWidget):
                     if self.parent is not None: 
                         self.parent.grancazzo() # Send a signal to parent object self.FileChanged()
 
+class ColorPicker (QtWidgets.QWidget):
+# This class is just a container for GUI elements useful for color management.
+# The GUI has: 1) a toolButton that opens a QColorDialog for picking colors,
+#              2) a lineEdit for storing the hexadecimal value of the color
+#              3) a spinBox with the value of transparency (alpha)
+# The selected color is stored in the variable 'color'
 
+    def __init__(self,parent=None,color='#FFFFFF'):
+        QtWidgets.QWidget.__init__(self)        
+        
+        # The current selected color (initialized here)
+        self.color = QtGui.QColor(color)
+        if not self.color.isValid(): self.color =  QtGui.QColor('#FFFFFF')
+        
+        # Here the GUI begins
+        self.Layout = QtWidgets.QHBoxLayout(self)
+        self.Layout.setContentsMargins(0,2,0,2)
+        
+        # Initilize the widget elements
+        self.color_label = QtWidgets.QLabel(" Color:       ")
+        self.color_toolButton = QtWidgets.QToolButton() 
+        self.hex_label = QtWidgets.QLabel(" Hex: ")
+        self.hex_lineEdit = QtWidgets.QLineEdit()
+        self.alpha_label = QtWidgets.QLabel(" Alpha: ")
+        self.alpha_spinBox = QtWidgets.QDoubleSpinBox()
+        
+        # Some non standard size policies
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHeightForWidth(self.color_toolButton.sizePolicy().hasHeightForWidth())
+        self.color_toolButton.setSizePolicy(sizePolicy)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHeightForWidth(self.hex_lineEdit.sizePolicy().hasHeightForWidth())
+        self.hex_lineEdit.setSizePolicy(sizePolicy)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHeightForWidth(self.alpha_spinBox.sizePolicy().hasHeightForWidth())
+        self.alpha_spinBox.setSizePolicy(sizePolicy)
+
+        # Some properties
+        self.color_toolButton.setAutoRaise(True)
+        self.hex_lineEdit.setMaxLength(7)
+        self.alpha_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
+        self.alpha_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)        
+        self.alpha_spinBox.setMaximum(1.0)
+        self.alpha_spinBox.setSingleStep(0.1)
+        self.alpha_spinBox.setValue(1.00)
+        self.changeToolButtonColor(self.color)
+        self.hex_lineEdit.setText(self.color.name().upper())
+        
+        self.Layout.addWidget(self.color_label)
+        self.Layout.addWidget(self.color_toolButton)
+        self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignRight)
+        self.Layout.addWidget(self.hex_lineEdit)
+        self.Layout.addWidget(self.alpha_label, 0, QtCore.Qt.AlignRight)
+        self.Layout.addWidget(self.alpha_spinBox)
+        
+        # Slots
+        self.color_toolButton.clicked.connect(self.openColorDialog)
+        self.hex_lineEdit.editingFinished.connect(self.updateColor)
+        self.alpha_spinBox.editingFinished.connect(self.updateColor)
+        
+    def openColorDialog(self):
+        # Open the dialog and get the selected color
+        col = QtWidgets.QColorDialog.getColor(self.color,options=QtWidgets.QColorDialog.ShowAlphaChannel)
+        if col.isValid():
+            self.color = col
+            # Change the color icon and set the hexadecimal lineedit and the alpha spinbox
+            self.changeToolButtonColor(col)
+            self.hex_lineEdit.setText(col.name().upper())
+            self.alpha_spinBox.setValue(col.alphaF())
+        
+    def updateColor(self):
+        # Update the color from the hexadecimal lineEdit and alpha spinBox
+        colstr = self.hex_lineEdit.text()
+        if QtGui.QColor.isValidColor(colstr):
+            self.color = QtGui.QColor(colstr)
+            self.color.setAlphaF(self.alpha_spinBox.value())
+            self.changeToolButtonColor(self.color)
+        else:
+            self.hex_lineEdit.setText(self.color.name().upper())
+        
+    def changeToolButtonColor (self, col):
+        # Change the color of the toolButton
+        if col.isValid():
+            px = QtGui.QPixmap(20, 20)
+            px.fill(col)
+            icon = QtGui.QIcon()
+            icon.addPixmap(px)
+            self.color_toolButton.setIcon(icon)
+                
+        
 class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
     def __init__(self, parent=None):
         super(Plot_Tab, self).__init__(parent)
         self.setupUi(self)
+        
+        self.MarkColor = ColorPicker(self)
+        self.Marker_gridLayout.addWidget(self.MarkColor, 2, 0, 1, 4)
+        
+  
 
 
 class Plot1DWindow(QMainWindow, Ui_Plot1D_Window):
@@ -103,7 +198,6 @@ class Plot1DWindow(QMainWindow, Ui_Plot1D_Window):
         self.file_inp = Filein_Widget(self)
         self.Main_gridLayout.addWidget(self.file_inp,0,0,1,0)
         self.plot_tab = Plot_Tab(self)
-        #self.Main_gridLayout.addWidget(self.plot_tab,1,2)
         
         self.stackedWidget.insertWidget(6,self.plot_tab)
         

@@ -102,6 +102,9 @@
          <property name="text">
           <string>    Plot1</string>
          </property>
+         <property name="flags">
+          <set>ItemIsSelectable|ItemIsEditable|ItemIsDragEnabled|ItemIsDropEnabled|ItemIsEnabled</set>
+         </property>
         </item>
        </widget>
       </item>
@@ -120,7 +123,7 @@
          <enum>QFrame::Sunken</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>6</number>
         </property>
         <widget class="QWidget" name="pageGeneral">
          <layout class="QGridLayout" name="gridLayout_11">
