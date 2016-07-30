@@ -21,7 +21,8 @@ FORMS    += UIs/qpylotwindow.ui\
             UIs/plot1d_window.ui\
             UIs/start_window.ui\
             UIs/plot1d_tabw.ui\
-            UIs/plot1d.ui
+            UIs/plot1d.ui \
+    UIs/form.ui
 
 DISTFILES += \
     main.py

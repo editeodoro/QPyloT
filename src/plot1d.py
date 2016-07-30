@@ -89,6 +89,54 @@ class Filein_Widget(QtWidgets.QWidget):
                     if self.parent is not None: 
                         self.parent.grancazzo() # Send a signal to parent object self.FileChanged()
 
+class FontPicker (QtWidgets.QWidget):
+# This class is just a container for GUI elements useful for font management.
+# The GUI has a font label + a toolButton to select the font
+
+    def __init__(self,parent=None,font='Helvetica'):
+        QtWidgets.QWidget.__init__(self)        
+        
+        # The current selected color (initialized here)
+        self.font = QtGui.QFont(font)
+
+        # Here the GUI begins
+        self.Layout = QtWidgets.QHBoxLayout(self)
+        self.Layout.setContentsMargins(0,2,0,2)
+        
+        # Initilize the widget elements
+        self.font_label = QtWidgets.QLabel(" Font:   ")
+        self.font_toolButton = QtWidgets.QToolButton()
+        
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        self.font_toolButton.setSizePolicy(sizePolicy)
+        
+        # Some properties
+        self.font_toolButton.setAutoRaise(True)
+        self.updateFont(self.font)
+        
+        # Add GUI elements to layout
+        self.Layout.addWidget(self.font_label)
+        self.Layout.addWidget(self.font_toolButton,QtCore.Qt.AlignLeft)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.Layout.addItem(spacerItem)
+        
+        # Slots
+        self.font_toolButton.clicked.connect(self.openFontDialog)
+        
+    def openFontDialog(self):
+        # Open the dialog and get the selected color
+        self.font = QtWidgets.QFontDialog.getFont(self.font)[0]
+        self.updateFont(self.font)
+            
+    def updateFont(self,newfont):
+        fontsize = newfont.pointSize()
+        fontstr = newfont.family()+", "+str(fontsize)
+        newfont.setPointSize(13)
+        self.font_toolButton.setFont(newfont)
+        newfont.setPointSize(fontsize)
+        self.font_toolButton.setText(fontstr)
+            
+            
 class ColorPicker (QtWidgets.QWidget):
 # This class is just a container for GUI elements useful for color management.
 # The GUI has: 1) a toolButton that opens a QColorDialog for picking colors,
@@ -97,6 +145,10 @@ class ColorPicker (QtWidgets.QWidget):
 # The selected color is stored in the variable 'color'
 
     def __init__(self,parent=None,color='#FFFFFF',longcol=True):
+        # Class constructor:
+        #   color = the inital color
+        #   longcol = if True, the widget comprises the hex lineedit
+        #             and alpha spinBox 
         QtWidgets.QWidget.__init__(self)        
         
         # The current selected color (initialized here)
@@ -108,7 +160,7 @@ class ColorPicker (QtWidgets.QWidget):
         self.Layout.setContentsMargins(0,2,0,2)
         
         # Initilize the widget elements
-        self.color_label = QtWidgets.QLabel(" Color:       ")
+        self.color_label = QtWidgets.QLabel(" Color:      ")
         self.color_toolButton = QtWidgets.QToolButton() 
         self.hex_label = QtWidgets.QLabel(" Hex: ")
         self.hex_lineEdit = QtWidgets.QLineEdit()
@@ -127,7 +179,7 @@ class ColorPicker (QtWidgets.QWidget):
         self.alpha_spinBox.setSizePolicy(sizePolicy)
 
         # Some properties
-        #self.color_toolButton.setAutoRaise(True)
+        self.color_toolButton.setAutoRaise(True)
         self.hex_lineEdit.setMaxLength(7)
         self.alpha_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.alpha_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)        
@@ -137,14 +189,18 @@ class ColorPicker (QtWidgets.QWidget):
         self.changeToolButtonColor(self.color)
         self.hex_lineEdit.setText(self.color.name().upper())
         
+        # Add GUI elements to layout
         self.Layout.addWidget(self.color_label)
-        self.Layout.addWidget(self.color_toolButton)
-        
+        self.Layout.addWidget(self.color_toolButton)     
         if longcol:
             self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignRight)
             self.Layout.addWidget(self.hex_lineEdit)
             self.Layout.addWidget(self.alpha_label, 0, QtCore.Qt.AlignRight)
             self.Layout.addWidget(self.alpha_spinBox)
+        else:
+            spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+            self.Layout.addItem(spacerItem)
+            
         
         # Slots
         self.color_toolButton.clicked.connect(self.openColorDialog)
@@ -188,21 +244,32 @@ class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
         self.setupUi(self)
         
         self.MarkColor = ColorPicker(self)
-        self.Marker_gridLayout.addWidget(self.MarkColor, 2, 0, 1, 4)
+        self.Marker_gridLayout.addWidget(self.MarkColor, 2, 0, 1, 5)
+        
+        self.MarkEdgeColor = ColorPicker(self)
+        self.MarkEdgeColor.color_label.setText(" Edges:     ")
+        #self.Marker_gridLayout.addWidget(self.MarkEdgeColor, 3, 0, 1, 5)
+
         
   
 
 
-class Plot1DWindow(QMainWindow, Ui_Plot1D_Window):
+class Plot1DWindow(QWidget, Ui_Plot1D_Window):
     def __init__(self, parent=None):
         super(Plot1DWindow, self).__init__(parent)
         self.setupUi(self)
     
         self.file_inp = Filein_Widget(self)
         self.Main_gridLayout.addWidget(self.file_inp,0,0,1,0)
-        self.plot_tab = Plot_Tab(self)
         
-        self.stackedWidget.insertWidget(6,self.plot_tab)
+        self.GeneralFont = FontPicker(self)
+        self.GeneralSettings_gridLayout.addWidget(self.GeneralFont, 1, 0, 1, 2)
+        
+        self.AxesLabelsFont = FontPicker(self)
+        self.AxesLabels_gridLayout.addWidget(self.AxesLabelsFont, 3, 0, 1, 2)
+        
+        self.plot_tab = Plot_Tab(self)
+        self.stackedWidget.insertWidget(4,self.plot_tab)
         
         self.listWidget.currentRowChanged[int].connect(self.Diocare)
         

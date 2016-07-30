@@ -8,11 +8,11 @@ except:
 import sys,subprocess
 
 from moc.ui_start import Ui_Start_Window
-from plot1d import Plot1DWindow
+from plot1d import Plot1DWindow,Plot_Tab
 
 from moc.ui_qpylot import Ui_QPyLOTWindow
 
-from PyQt5 import QtGui
+from PyQt5 import QtGui,QtWidgets
 
 def open_file(filename):
     if sys.platform.startswith('darwin'):
@@ -48,23 +48,28 @@ class StartWindow(QMainWindow, Ui_Start_Window):
         self.mainToolBar.addAction(self.actionPlot2D)
         
         
+        self.Plot1DWidget = Plot1DWindow()
+        self.stackedWidget.insertWidget(0,self.Plot1DWidget)
+        self.stackedWidget.setCurrentIndex(0)
         
         
-        
-        self.actionPlot1D.triggered.connect(self.openPlot1D_Window)
-        self.pushButton_plot1d.clicked.connect(self.openPlot1D_Window)
-        self.pushButton_plot2d.clicked.connect(self.openPlot2D_Window)
+        self.actionPlot1D.triggered.connect(self.aa)
+        self.actionPlot2D.triggered.connect(self.bb)
 
+
+    def aa(self):
+        self.stackedWidget.setCurrentIndex(0)
         
+    def bb(self):
+        self.stackedWidget.setCurrentIndex(1)
+    
+    #"""       
     def openPlot1D_Window(self):
         if self.plot1d_w is None:
             self.plot1d_w = Plot1DWindow(self)
         self.plot1d_w.show()
+    #"""
 
-    def openPlot2D_Window(self):
-        if self.plot2d_w is None:
-            self.plot2d_w = Plot2DWindow(self)
-        self.plot2d_w.show()
 
 
     def chk_fun(self):
@@ -86,8 +91,8 @@ class Plot2DWindow(QMainWindow, Ui_QPyLOTWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-#    frame = StartWindow()
-    frame = Plot1DWindow()
+    frame = StartWindow()
+#    frame = Plot1DWindow()
     frame.show()
     app.exec_()
 	
