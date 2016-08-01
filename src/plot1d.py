@@ -8,6 +8,7 @@ import numpy as np
 from PyQt5.QtWidgets import *
 from moc.ui_plot1d import Ui_Plot1D_Window
 from moc.ui_plot1d_tabw import Ui_Plot1D_tabwidget
+from moc.ui_axes_tabw import Ui_Axes_tabwidget
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
@@ -131,7 +132,7 @@ class FontPicker (QtWidgets.QWidget):
     def updateFont(self,newfont):
         fontsize = newfont.pointSize()
         fontstr = newfont.family()+", "+str(fontsize)
-        newfont.setPointSize(13)
+        newfont.setPointSize(12)
         self.font_toolButton.setFont(newfont)
         newfont.setPointSize(fontsize)
         self.font_toolButton.setText(fontstr)
@@ -237,11 +238,50 @@ class ColorPicker (QtWidgets.QWidget):
             #self.color_toolButton.setIcon(icon)
             self.color_toolButton.setStyleSheet("background-color: "+self.color.name())
                 
+
+class Axes_Tab (QWidget,Ui_Axes_tabwidget):
+    def __init__(self, parent=None):
+        super(Axes_Tab, self).__init__(parent)
+        self.setupUi(self)
+        self.parent = parent
+        
+        #Initializing the Font Pickers for Labels and Tics
+        self.AxesLabelsFont = FontPicker(self)
+        self.AxesLabels_gridLayout.addWidget(self.AxesLabelsFont, 3, 0, 1, 2)
+        
+        self.TicsLabelsFont = FontPicker(self)
+        self.Tics_gridLayout.addWidget(self.TicsLabelsFont, 8, 0, 1, 2)
+
+
+        #Slots
+        self.Xrange_checkBox.clicked[bool].connect(self.XrangeClicked)
+        self.Yrange_checkBox.clicked[bool].connect(self.YrangeClicked)
+        self.XticsMinor_checkBox.clicked[bool].connect(self.XticsMinorClicked)
+        self.YticsMinor_checkBox.clicked[bool].connect(self.YticsMinorClicked)
+        
+    def XrangeClicked(self, checked):
+        self.Xrange_from_lineEdit.setEnabled(checked)
+        self.Xrange_to_lineEdit.setEnabled(checked)
+        
+    def YrangeClicked(self, checked):
+        self.Yrange_from_lineEdit.setEnabled(checked)
+        self.Yrange_to_lineEdit.setEnabled(checked)
+        
+    def XticsMinorClicked(self, checked):
+        self.XticsMinor_spinBox.setEnabled(checked)
+        self.XticsMinorLength_doubleSpinBox.setEnabled(checked)
+        self.XticsMinorLength_label.setEnabled(checked)
+        
+    def YticsMinorClicked(self, checked):
+        self.YticsMinor_spinBox.setEnabled(checked)
+        self.YticsMinorLength_doubleSpinBox.setEnabled(checked)
+        self.YticsMinorLength_label.setEnabled(checked)
         
 class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
     def __init__(self, parent=None):
         super(Plot_Tab, self).__init__(parent)
         self.setupUi(self)
+        self.parent = parent
         
         self.MarkColor = ColorPicker(self)
         self.Marker_gridLayout.addWidget(self.MarkColor, 2, 0, 1, 5)
@@ -251,7 +291,27 @@ class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
         #self.Marker_gridLayout.addWidget(self.MarkEdgeColor, 3, 0, 1, 5)
 
         
-  
+        #Slots
+        self.Xerr_checkBox.clicked[bool].connect(self.XerrClicked)
+        self.Yerr_checkBox.clicked[bool].connect(self.YerrClicked)
+        self.Rows_from_checkBox.clicked[bool].connect(self.RowsfromClicked)
+        self.Rows_all_checkBox.clicked[bool].connect(self.RowsAllClicked)
+        
+    def XerrClicked(self, checked):
+        self.Xerr_file_comboBox.setEnabled(checked)
+        self.Xerr_col_comboBox.setEnabled(checked)
+
+    def YerrClicked(self, checked):
+        self.Yerr_file_comboBox.setEnabled(checked)
+        self.Yerr_col_comboBox.setEnabled(checked)
+        
+    def RowsfromClicked(self, checked):
+        self.Rows_from_spinBox.setEnabled(checked)
+        self.Rows_to_spinBox.setEnabled(checked)
+    
+    def RowsAllClicked(self, checked):
+        self.Rows_from_spinBox.setEnabled(not checked)
+        self.Rows_to_spinBox.setEnabled(not checked)
 
 
 class Plot1DWindow(QWidget, Ui_Plot1D_Window):
@@ -265,11 +325,17 @@ class Plot1DWindow(QWidget, Ui_Plot1D_Window):
         self.GeneralFont = FontPicker(self)
         self.GeneralSettings_gridLayout.addWidget(self.GeneralFont, 1, 0, 1, 2)
         
-        self.AxesLabelsFont = FontPicker(self)
-        self.AxesLabels_gridLayout.addWidget(self.AxesLabelsFont, 3, 0, 1, 2)
+
+        
+        self.axes_tab = Axes_Tab()
+        self.stackedWidget.insertWidget(1,self.axes_tab)
         
         self.plot_tab = Plot_Tab(self)
         self.stackedWidget.insertWidget(4,self.plot_tab)
+        
+
+        
+        
         
         self.listWidget.currentRowChanged[int].connect(self.Diocare)
         

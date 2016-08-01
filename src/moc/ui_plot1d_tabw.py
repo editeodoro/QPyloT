@@ -299,7 +299,6 @@ class Ui_Plot1D_tabwidget(object):
 
     def retranslateUi(self, Plot1D_tabwidget):
         _translate = QtCore.QCoreApplication.translate
-        Plot1D_tabwidget.setWindowTitle(_translate("Plot1D_tabwidget", "Form"))
         self.label_24.setText(_translate("Plot1D_tabwidget", "f(x)"))
         self.label_13.setText(_translate("Plot1D_tabwidget", " Data X: "))
         self.label_15.setText(_translate("Plot1D_tabwidget", "File "))

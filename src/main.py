@@ -48,9 +48,9 @@ class StartWindow(QMainWindow, Ui_Start_Window):
         self.mainToolBar.addAction(self.actionPlot2D)
         
         
-        self.Plot1DWidget = Plot1DWindow()
-        self.stackedWidget.insertWidget(0,self.Plot1DWidget)
-        self.stackedWidget.setCurrentIndex(0)
+        self.Plot1DWidget = Plot1DWindow(self)
+        self.Main_stackedWidget.insertWidget(0,self.Plot1DWidget)
+        self.Main_stackedWidget.setCurrentIndex(0)
         
         
         self.actionPlot1D.triggered.connect(self.aa)
@@ -58,10 +58,10 @@ class StartWindow(QMainWindow, Ui_Start_Window):
 
 
     def aa(self):
-        self.stackedWidget.setCurrentIndex(0)
+        self.Main_stackedWidget.setCurrentIndex(0)
         
     def bb(self):
-        self.stackedWidget.setCurrentIndex(1)
+        self.Main_stackedWidget.setCurrentIndex(1)
     
     #"""       
     def openPlot1D_Window(self):
