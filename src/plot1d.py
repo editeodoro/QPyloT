@@ -158,7 +158,7 @@ class ColorPicker (QtWidgets.QWidget):
         
         # Here the GUI begins
         self.Layout = QtWidgets.QHBoxLayout(self)
-        self.Layout.setContentsMargins(0,2,0,2)
+        self.Layout.setContentsMargins(0,0,0,0)
         
         # Initilize the widget elements
         self.color_label = QtWidgets.QLabel(" Color:      ")
@@ -172,15 +172,16 @@ class ColorPicker (QtWidgets.QWidget):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHeightForWidth(self.color_toolButton.sizePolicy().hasHeightForWidth())
         self.color_toolButton.setSizePolicy(sizePolicy)
+        
+        
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHeightForWidth(self.hex_lineEdit.sizePolicy().hasHeightForWidth())
         self.hex_lineEdit.setSizePolicy(sizePolicy)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHeightForWidth(self.alpha_spinBox.sizePolicy().hasHeightForWidth())
         self.alpha_spinBox.setSizePolicy(sizePolicy)
 
         # Some properties
         self.color_toolButton.setAutoRaise(True)
+        self.color_toolButton.setFixedSize(50,20)        
         self.hex_lineEdit.setMaxLength(7)
         self.alpha_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
         self.alpha_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)        
@@ -191,8 +192,8 @@ class ColorPicker (QtWidgets.QWidget):
         self.hex_lineEdit.setText(self.color.name().upper())
         
         # Add GUI elements to layout
-        self.Layout.addWidget(self.color_label)
-        self.Layout.addWidget(self.color_toolButton)     
+        if longcol: self.Layout.addWidget(self.color_label)
+        self.Layout.addWidget(self.color_toolButton,QtCore.Qt.AlignLeft)     
         if longcol:
             self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignRight)
             self.Layout.addWidget(self.hex_lineEdit)
@@ -201,6 +202,7 @@ class ColorPicker (QtWidgets.QWidget):
         else:
             spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
             self.Layout.addItem(spacerItem)
+        
             
         
         # Slots
@@ -252,7 +254,15 @@ class Axes_Tab (QWidget,Ui_Axes_tabwidget):
         self.TicsLabelsFont = FontPicker(self)
         self.Tics_gridLayout.addWidget(self.TicsLabelsFont, 8, 0, 1, 2)
 
-
+        self.AxesColor = ColorPicker(self,color='#000000',longcol=False)
+        self.AxesProperties_gridLayout.addWidget(self.AxesColor, 3, 2, 1, 1)
+        
+        self.AxesCanvasColor = ColorPicker(self,color='#FFFFFF',longcol=False)
+        self.AxesProperties_gridLayout.addWidget(self.AxesCanvasColor, 3, 4, 1, 1)
+        
+        self.LabelColor = ColorPicker(self,color='#000000',longcol=False)
+        self.AxesLabels_gridLayout.addWidget(self.LabelColor, 3, 3)
+        
         #Slots
         self.Xrange_checkBox.clicked[bool].connect(self.XrangeClicked)
         self.Yrange_checkBox.clicked[bool].connect(self.YrangeClicked)
