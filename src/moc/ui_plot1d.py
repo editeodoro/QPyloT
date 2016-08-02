@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Plot1D_Window(object):
     def setupUi(self, Plot1D_Window):
         Plot1D_Window.setObjectName("Plot1D_Window")
-        Plot1D_Window.resize(702, 456)
+        Plot1D_Window.resize(654, 439)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Plot1D_Window)
         self.horizontalLayout.setContentsMargins(11, 11, 11, 11)
         self.horizontalLayout.setSpacing(6)
@@ -20,6 +20,12 @@ class Ui_Plot1D_Window(object):
         self.Main_gridLayout.setContentsMargins(11, 11, 11, 11)
         self.Main_gridLayout.setSpacing(6)
         self.Main_gridLayout.setObjectName("Main_gridLayout")
+        self.pushButton_2 = QtWidgets.QPushButton(Plot1D_Window)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.Main_gridLayout.addWidget(self.pushButton_2, 2, 3, 1, 1)
+        self.pushButton = QtWidgets.QPushButton(Plot1D_Window)
+        self.pushButton.setObjectName("pushButton")
+        self.Main_gridLayout.addWidget(self.pushButton, 2, 4, 1, 1)
         self.stackedWidget = QtWidgets.QStackedWidget(Plot1D_Window)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -112,7 +118,9 @@ class Ui_Plot1D_Window(object):
         self.label_14.setObjectName("label_14")
         self.gridLayout_5.addWidget(self.label_14, 0, 0, 1, 1)
         self.stackedWidget.addWidget(self.pageData1)
-        self.Main_gridLayout.addWidget(self.stackedWidget, 1, 2, 1, 1)
+        self.Main_gridLayout.addWidget(self.stackedWidget, 1, 2, 1, 3)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.Main_gridLayout.addItem(spacerItem5, 2, 2, 1, 1)
         self.listWidget = QtWidgets.QListWidget(Plot1D_Window)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -155,8 +163,8 @@ class Ui_Plot1D_Window(object):
         item.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsDragEnabled|QtCore.Qt.ItemIsDropEnabled|QtCore.Qt.ItemIsEnabled)
         self.listWidget.addItem(item)
         self.Main_gridLayout.addWidget(self.listWidget, 1, 1, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(150, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
-        self.Main_gridLayout.addItem(spacerItem5, 2, 1, 1, 1)
+        spacerItem6 = QtWidgets.QSpacerItem(150, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        self.Main_gridLayout.addItem(spacerItem6, 2, 1, 1, 1)
         self.horizontalLayout.addLayout(self.Main_gridLayout)
 
         self.retranslateUi(Plot1D_Window)
@@ -166,6 +174,8 @@ class Ui_Plot1D_Window(object):
     def retranslateUi(self, Plot1D_Window):
         _translate = QtCore.QCoreApplication.translate
         Plot1D_Window.setWindowTitle(_translate("Plot1D_Window", "Form"))
+        self.pushButton_2.setText(_translate("Plot1D_Window", "Reset"))
+        self.pushButton.setText(_translate("Plot1D_Window", "Plot"))
         self.Generallabel.setText(_translate("Plot1D_Window", "GENERAL SETTINGS"))
         self.label_26.setText(_translate("Plot1D_Window", "LEGEND"))
         self.label_13.setText(_translate("Plot1D_Window", "EMPTY DATA PAGE"))

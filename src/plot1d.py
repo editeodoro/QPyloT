@@ -241,18 +241,82 @@ class ColorPicker (QtWidgets.QWidget):
             self.color_toolButton.setStyleSheet("background-color: "+self.color.name())
                 
 
+class LineStyleSelector (QtWidgets.QWidget):
+# This class is just a container for GUI elements useful for linestyle management.
+# The GUI has: 
+
+    def __init__(self,parent=None,lstyle='solid',lwidth=1.,lcolor='#000000'):
+        # Class constructor
+        QtWidgets.QWidget.__init__(self)        
+        
+        self.Layout = QtWidgets.QGridLayout(self)
+        self.Layout.setContentsMargins(0,0,0,0)
+        
+        self.lstyle = lstyle
+        
+        # Initilize the widget elements
+        self.lstyle_label = QtWidgets.QLabel(" Line style:  ")
+        self.lwidth_label = QtWidgets.QLabel(" Line width:  ")
+        self.lcolor_label = QtWidgets.QLabel(" Color:  ")
+        self.lstyle_comboBox = QtWidgets.QComboBox(self)
+        self.lstyle_lineEdit = QtWidgets.QLineEdit(self)
+        self.lwidth_spinBox = QtWidgets.QDoubleSpinBox(self)
+        self.lcolor = ColorPicker(self,color=lcolor,longcol=False)
+        
+        # Elements Properties
+        self.lstyle_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lwidth_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lcolor_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lwidth_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.lwidth_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        self.lstyle_comboBox.addItem("solid")
+        self.lstyle_comboBox.addItem("dashed")
+        self.lstyle_comboBox.addItem("dotted")
+        self.lstyle_comboBox.addItem("dashdotted")
+        self.lstyle_comboBox.addItem("custom")
+        self.lstyle_lineEdit.setHidden(True)
+
+        # Adding to layout
+        self.Layout.addWidget(self.lstyle_label,0,0,1,1)
+        self.Layout.addWidget(self.lstyle_comboBox,0,1,1,1)
+        self.Layout.addWidget(self.lstyle_lineEdit,0,2,1,2)
+        self.Layout.addWidget(self.lwidth_label,1,0,1,1)
+        self.Layout.addWidget(self.lwidth_spinBox,1,1,1,1)
+        self.Layout.addWidget(self.lcolor_label,1,2,1,1)
+        self.Layout.addWidget(self.lcolor,1,3,1,1)
+
+        #Slots
+        self.lstyle_comboBox.activated[str].connect(self.LineStyleActivated)
+        
+        
+    def LineStyleActivated(self, val):
+        if val=='custom':
+            self.lstyle_lineEdit.setHidden(False)
+        else:
+            self.lstyle_lineEdit.setHidden(True)
+            self.lstyle = val
+            
+            
+
 class Axes_Tab (QWidget,Ui_Axes_tabwidget):
     def __init__(self, parent=None):
         super(Axes_Tab, self).__init__(parent)
         self.setupUi(self)
         self.parent = parent
         
-        #Initializing the Font Pickers for Labels and Tics
+        
+        #Initializing the Font Pickers and Color Picker for Labels and Tics
         self.AxesLabelsFont = FontPicker(self)
         self.AxesLabels_gridLayout.addWidget(self.AxesLabelsFont, 3, 0, 1, 2)
         
+        self.LabelColor = ColorPicker(self,color='#000000',longcol=False)
+        self.AxesLabels_gridLayout.addWidget(self.LabelColor, 3, 3)
+        
         self.TicsLabelsFont = FontPicker(self)
-        self.Tics_gridLayout.addWidget(self.TicsLabelsFont, 8, 0, 1, 2)
+        self.Tics_gridLayout.addWidget(self.TicsLabelsFont, 8, 0, 1, 3)
+
+        self.TicsLabelColor = ColorPicker(self,color='#000000',longcol=False)
+        self.Tics_gridLayout.addWidget(self.TicsLabelColor, 8, 4,1,3)
 
         self.AxesColor = ColorPicker(self,color='#000000',longcol=False)
         self.AxesProperties_gridLayout.addWidget(self.AxesColor, 3, 2, 1, 1)
@@ -260,14 +324,29 @@ class Axes_Tab (QWidget,Ui_Axes_tabwidget):
         self.AxesCanvasColor = ColorPicker(self,color='#FFFFFF',longcol=False)
         self.AxesProperties_gridLayout.addWidget(self.AxesCanvasColor, 3, 4, 1, 1)
         
-        self.LabelColor = ColorPicker(self,color='#000000',longcol=False)
-        self.AxesLabels_gridLayout.addWidget(self.LabelColor, 3, 3)
+        self.GridLineStyle = LineStyleSelector(self,lstyle="dotted",lwidth=0.5)
+        self.AxesProperties_gridLayout.addWidget(self.GridLineStyle, 5, 1, 2, 4)
+        self.GridLineStyle.setEnabled(False)
+
+        
+        
+        
+        self.tabWidget.setCurrentIndex(0)
         
         #Slots
+        self.Grid_checkBox.clicked[bool].connect(self.GridClicked)
         self.Xrange_checkBox.clicked[bool].connect(self.XrangeClicked)
         self.Yrange_checkBox.clicked[bool].connect(self.YrangeClicked)
-        self.XticsMinor_checkBox.clicked[bool].connect(self.XticsMinorClicked)
-        self.YticsMinor_checkBox.clicked[bool].connect(self.YticsMinorClicked)
+        self.XticsMinor_checkBox.clicked[bool].connect(self.TicsMinorClicked)
+        self.YticsMinor_checkBox.clicked[bool].connect(self.TicsMinorClicked)
+        self.showLeft_checkBox.clicked[bool].connect(self.showAxisClicked)
+        self.showBottom_checkBox.clicked[bool].connect(self.showAxisClicked)
+        self.showRight_checkBox.clicked[bool].connect(self.showAxisClicked)
+        self.showTop_checkBox.clicked[bool].connect(self.showAxisClicked)
+    
+    
+    def GridClicked(self, checked):
+                self.GridLineStyle.setEnabled(checked)
         
     def XrangeClicked(self, checked):
         self.Xrange_from_lineEdit.setEnabled(checked)
@@ -277,15 +356,30 @@ class Axes_Tab (QWidget,Ui_Axes_tabwidget):
         self.Yrange_from_lineEdit.setEnabled(checked)
         self.Yrange_to_lineEdit.setEnabled(checked)
         
-    def XticsMinorClicked(self, checked):
-        self.XticsMinor_spinBox.setEnabled(checked)
-        self.XticsMinorLength_doubleSpinBox.setEnabled(checked)
-        self.XticsMinorLength_label.setEnabled(checked)
-        
-    def YticsMinorClicked(self, checked):
-        self.YticsMinor_spinBox.setEnabled(checked)
-        self.YticsMinorLength_doubleSpinBox.setEnabled(checked)
-        self.YticsMinorLength_label.setEnabled(checked)
+    def TicsMinorClicked(self, checked):
+        # Enable the fields for minor tics
+        if (self.sender()==self.XticsMinor_checkBox):
+            self.XticsMinor_spinBox.setEnabled(checked)
+            self.XticsMinorLength_doubleSpinBox.setEnabled(checked)
+            self.XticsMinorLength_label.setEnabled(checked)
+            self.XticsMinorWidth_doubleSpinBox.setEnabled(checked)
+            self.XticsMinorWidth_label.setEnabled(checked)
+        elif (self.sender()==self.YticsMinor_checkBox):
+            self.YticsMinor_spinBox.setEnabled(checked)
+            self.YticsMinorLength_doubleSpinBox.setEnabled(checked)
+            self.YticsMinorLength_label.setEnabled(checked)
+            self.YticsMinorWidth_doubleSpinBox.setEnabled(checked)
+            self.YticsMinorWidth_label.setEnabled(checked)
+            
+    def showAxisClicked(self, checked):
+        # If an axis is disabled, disabling the corresponding tics
+        snd = self.sender()
+        if   (snd==self.showLeft_checkBox):   cBox = self.TicsLeft_checkBox
+        elif (snd==self.showBottom_checkBox): cBox = self.TicsBottom_checkBox
+        elif (snd==self.showRight_checkBox):  cBox = self.TicsRight_checkBox
+        elif (snd==self.showTop_checkBox):    cBox = self.TicsTop_checkBox
+        cBox.setChecked(checked)
+        cBox.setEnabled(checked)
         
 class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
     def __init__(self, parent=None):
@@ -300,6 +394,7 @@ class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
         self.MarkEdgeColor.color_label.setText(" Edges:     ")
         #self.Marker_gridLayout.addWidget(self.MarkEdgeColor, 3, 0, 1, 5)
 
+        self.tabWidget.setCurrentIndex(0)
         
         #Slots
         self.Xerr_checkBox.clicked[bool].connect(self.XerrClicked)
@@ -344,7 +439,7 @@ class Plot1DWindow(QWidget, Ui_Plot1D_Window):
         self.stackedWidget.insertWidget(4,self.plot_tab)
         
 
-        
+        self.pippo = QtWidgets.QToolButton(self.listWidget)
         
         
         self.listWidget.currentRowChanged[int].connect(self.Diocare)
