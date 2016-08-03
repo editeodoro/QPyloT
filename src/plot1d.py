@@ -69,7 +69,9 @@ class Selector(QtWidgets.QWidget, Ui_Right_Selector):
         self.Down_toolButton.setEnabled(isEnabled)
         self.Up_toolButton.setEnabled(isEnabled)
         self.rowChanged.emit(idx)
-
+    
+    
+    @QtCore.pyqtSlot()
     def MinusButtonClicked(self):
         # Delete a plot
         curRow = self.listWidget.currentRow()
@@ -77,6 +79,8 @@ class Selector(QtWidgets.QWidget, Ui_Right_Selector):
         self.listWidget.takeItem(curRow)
         self.type.pop(curRow-self.firstplot)
 
+
+    @QtCore.pyqtSlot()
     def ReorderEntries(self):
         # This function reorder the entries in the listWidget
         if len(self.type)==1: return
@@ -100,7 +104,7 @@ class Selector(QtWidgets.QWidget, Ui_Right_Selector):
             self.plotOrder.emit(curRow,"down")
             
             
-    
+    @QtCore.pyqtSlot()
     def PlusButtonClicked(self):
         # Function to add a plot
         if self.sender()==self.add_plot:
@@ -121,7 +125,6 @@ class Selector(QtWidgets.QWidget, Ui_Right_Selector):
         # Send a signal to the parent widget to add a plot tab
         self.plotAdded.emit(name[1],self.firstplot+len(self.type))
         self.type.append(name[1])
-
         
         
     def getNumberOfPlots(self):
@@ -163,7 +166,7 @@ class Filein_Widget(QtWidgets.QWidget):
         self.File_pushButton[r].clicked.connect(self.openDialog)
         
         # Now creating the "Add" toolButton with a popup menu.
-        # The QMenu as two actions: Add and Remove a file
+        # The QMenu has two actions: Add and Remove a file
         self.File_Menu.append(QtWidgets.QMenu(self))
         self.add_act.append(QtWidgets.QAction("Add file",self))
         self.rem_act.append(QtWidgets.QAction("Remove file",self))
@@ -190,6 +193,7 @@ class Filein_Widget(QtWidgets.QWidget):
                 self.File_toolButton[idx].setVisible(False)
                 self.file_name[idx] = self.col_name[idx] = None
     
+    @QtCore.pyqtSlot()
     def openDialog(self):
         # Select file and read column names        
         filen = QFileDialog.getOpenFileName(self, 'Open file')[0]
@@ -216,7 +220,7 @@ class FontPicker (QtWidgets.QWidget):
     def __init__(self,parent=None,font='Helvetica'):
         QtWidgets.QWidget.__init__(self)        
         
-        # The current selected color (initialized here)
+        # The current selected font (initialized here)
         self.font = QtGui.QFont(font)
 
         # Here the GUI begins
@@ -243,6 +247,7 @@ class FontPicker (QtWidgets.QWidget):
         # Slots
         self.font_toolButton.clicked.connect(self.openFontDialog)
         
+    @QtCore.pyqtSlot()
     def openFontDialog(self):
         # Open the dialog and get the selected color
         self.font = QtWidgets.QFontDialog.getFont(self.font)[0]
@@ -325,7 +330,8 @@ class ColorPicker (QtWidgets.QWidget):
         self.color_toolButton.clicked.connect(self.openColorDialog)
         self.hex_lineEdit.editingFinished.connect(self.updateColor)
         self.alpha_spinBox.editingFinished.connect(self.updateColor)
-        
+
+    @QtCore.pyqtSlot()
     def openColorDialog(self):
         # Open the dialog and get the selected color
         col = QtWidgets.QColorDialog.getColor(self.color,options=QtWidgets.QColorDialog.ShowAlphaChannel)
@@ -461,17 +467,21 @@ class Axes_Tab (QWidget,Ui_Axes_tabwidget):
         self.showTop_checkBox.clicked[bool].connect(self.showAxisClicked)
     
     
+    @QtCore.pyqtSlot(bool)
     def GridClicked(self, checked):
-                self.GridLineStyle.setEnabled(checked)
-        
+        self.GridLineStyle.setEnabled(checked)
+    
+    @QtCore.pyqtSlot(bool)
     def XrangeClicked(self, checked):
         self.Xrange_from_lineEdit.setEnabled(checked)
         self.Xrange_to_lineEdit.setEnabled(checked)
-        
+    
+    @QtCore.pyqtSlot(bool)
     def YrangeClicked(self, checked):
         self.Yrange_from_lineEdit.setEnabled(checked)
         self.Yrange_to_lineEdit.setEnabled(checked)
-        
+    
+    @QtCore.pyqtSlot(bool)
     def TicsMinorClicked(self, checked):
         # Enable the fields for minor tics
         if (self.sender()==self.XticsMinor_checkBox):
@@ -487,6 +497,7 @@ class Axes_Tab (QWidget,Ui_Axes_tabwidget):
             self.YticsMinorWidth_doubleSpinBox.setEnabled(checked)
             self.YticsMinorWidth_label.setEnabled(checked)
             
+    @QtCore.pyqtSlot(bool)
     def showAxisClicked(self, checked):
         # If an axis is disabled, disabling the corresponding tics
         snd = self.sender()
@@ -518,18 +529,22 @@ class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
         self.Rows_from_checkBox.clicked[bool].connect(self.RowsfromClicked)
         self.Rows_all_checkBox.clicked[bool].connect(self.RowsAllClicked)
         
+    @QtCore.pyqtSlot(bool)
     def XerrClicked(self, checked):
         self.Xerr_file_comboBox.setEnabled(checked)
         self.Xerr_col_comboBox.setEnabled(checked)
 
+    @QtCore.pyqtSlot(bool)
     def YerrClicked(self, checked):
         self.Yerr_file_comboBox.setEnabled(checked)
         self.Yerr_col_comboBox.setEnabled(checked)
-        
+    
+    @QtCore.pyqtSlot(bool)
     def RowsfromClicked(self, checked):
         self.Rows_from_spinBox.setEnabled(checked)
         self.Rows_to_spinBox.setEnabled(checked)
     
+    @QtCore.pyqtSlot(bool)
     def RowsAllClicked(self, checked):
         self.Rows_from_spinBox.setEnabled(not checked)
         self.Rows_to_spinBox.setEnabled(not checked)
@@ -569,7 +584,6 @@ class Plot1DWindow(QWidget, Ui_Plot1D_Window):
         self.stackedWidget.insertWidget(idx,self.plot_tab[-1])
     
     def reorderPlot_tab (self, idx, direc):
-        print (idx, direc)
         np = idx-self.selector.firstplot
         curWid = self.stackedWidget.widget(idx)
         if direc.lower()=="up": insrow, insn = idx-1, np-1
