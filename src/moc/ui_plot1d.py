@@ -127,6 +127,7 @@ class Ui_Plot1D_Window(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.listWidget.sizePolicy().hasHeightForWidth())
         self.listWidget.setSizePolicy(sizePolicy)
+        self.listWidget.setFocusPolicy(QtCore.Qt.NoFocus)
         self.listWidget.setObjectName("listWidget")
         item = QtWidgets.QListWidgetItem()
         font = QtGui.QFont()
