@@ -11,18 +11,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QPyLOT
 TEMPLATE = app
 
-
-SOURCES += main.cpp\
-        qpylotwindow.cpp
-
-HEADERS  += qpylotwindow.h
-
-FORMS    += UIs/plot1d_window.ui\
-            UIs/start_window.ui\
+FORMS    += UIs/start_window.ui\
             UIs/plot1d_tabw.ui\
             UIs/plot1d.ui \
-            UIs/axes_tabw.ui
+            UIs/axes_tabw.ui\
+            UIs/right_selector.ui\
+            UIs/dummy.ui
 
-DISTFILES += \
-    main.py
-
+DISTFILES += main.py\
+             plot1d.py\
+             make

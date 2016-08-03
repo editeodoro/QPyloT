@@ -6,6 +6,7 @@ $PYUIC -o moc/ui_start.py UIs/start_window.ui
 $PYUIC -o moc/ui_plot1d.py UIs/plot1d.ui
 $PYUIC -o moc/ui_plot1d_tabw.py UIs/plot1d_tabw.ui
 $PYUIC -o moc/ui_axes_tabw.py UIs/axes_tabw.ui
+$PYUIC -o moc/ui_right_selector.py UIs/right_selector.ui
 
 
 $PYUIC -o moc/ui_dummy.py UIs/dummy.ui

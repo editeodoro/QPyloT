@@ -3,7 +3,13 @@ try:
 except:
     from PyQt5.QtWidgets import *
     
-    
+## CRAP TO BE DELETED
+from moc.ui_dummy import Ui_Dummy
+class Dummy(QWidget, Ui_Dummy):
+    def __init__(self, parent=None):
+        super(Dummy, self).__init__(parent)
+        self.setupUi(self)
+######################
     
 import sys,subprocess
 
@@ -92,7 +98,7 @@ class Plot2DWindow(QMainWindow, Ui_QPyLOTWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     frame = StartWindow()
-#    frame = Plot1DWindow()
+#    frame = Dummy()
     frame.show()
     app.exec_()
 	

@@ -2,12 +2,13 @@
 
 # Test if NumPy, Matplotlib and PyQt5 modules are installed
 if ! $(python -c "import numpy" &> /dev/null); then
-    echo "ERROR:" >&2
+    echo "ERROR: Numpy" >&2
 elif ! $(python -c "import matplotlib" &> /dev/null); then
-    echo "ERROR: " >&2
+    echo "ERROR: Matplotlib" >&2
 elif ! $(python -c "import PyQt5" &> /dev/null); then
-    echo "ERROR: " >&2
+    echo "ERROR: PyQt5" >&2
 else
     cd src
-    python main.py &
+    python3 main.py &
 fi
+

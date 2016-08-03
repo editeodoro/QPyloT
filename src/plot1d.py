@@ -9,8 +9,127 @@ from PyQt5.QtWidgets import *
 from moc.ui_plot1d import Ui_Plot1D_Window
 from moc.ui_plot1d_tabw import Ui_Plot1D_tabwidget
 from moc.ui_axes_tabw import Ui_Axes_tabwidget
+from moc.ui_right_selector import Ui_Right_Selector
 
 from PyQt5 import QtWidgets, QtCore, QtGui
+
+class Selector(QtWidgets.QWidget, Ui_Right_Selector):
+    
+    # Some signals to emit when row is changed 
+    # or when a plot is added/deleted/reordered
+    rowChanged  = QtCore.pyqtSignal(int)
+    plotAdded   = QtCore.pyqtSignal(str,int)
+    plotDeleted = QtCore.pyqtSignal(int)
+    plotOrder   = QtCore.pyqtSignal(int,str)
+    
+    def __init__(self, parent=None):
+        super(Selector, self).__init__(parent)
+        self.setupUi(self)
+        self.parent = parent
+                
+        # Adding a contextual menu to the Plus button:
+        # The user can choose between a new plot, function or histogram
+        self.Plus_Menu = QtWidgets.QMenu(self)
+        self.add_plot = QtWidgets.QAction("Add plot",self)
+        self.add_func = QtWidgets.QAction("Add function",self)
+        self.add_hist = QtWidgets.QAction("Add histogram",self)
+
+        self.Plus_Menu.addAction(self.add_plot)
+        self.Plus_Menu.addAction(self.add_func)
+        self.Plus_Menu.addAction(self.add_hist)
+        self.Plus_toolButton.setMenu(self.Plus_Menu)
+        
+        # Slots
+        self.listWidget.currentRowChanged[int].connect(self.RowChanged)
+        self.Minus_toolButton.clicked.connect(self.MinusButtonClicked)
+        self.Up_toolButton.clicked.connect(self.ReorderEntries)
+        self.Down_toolButton.clicked.connect(self.ReorderEntries)
+        self.add_plot.triggered.connect(self.PlusButtonClicked)
+        self.add_func.triggered.connect(self.PlusButtonClicked)
+        self.add_hist.triggered.connect(self.PlusButtonClicked)
+        
+        # Counters of added plots, functions and histograms
+        self.nplot, self.nfunc, self.nhist = 1, 0, 0
+        
+        # Type of plots: "PLOT", "FUNC" or "HIST"
+        self.type = ["PLOT"]
+        
+        # The first index of the list referring to a plot
+        self.firstplot = 4
+        
+    
+        
+    @QtCore.pyqtSlot(int)
+    def RowChanged(self,idx):
+        # Enable the Minus, Up and Down buttons if we are in 'Data' list
+        # and emit the rowChaged signal
+        if idx>=self.firstplot: isEnabled = True
+        else: isEnabled = False
+        self.Minus_toolButton.setEnabled(isEnabled)
+        self.Down_toolButton.setEnabled(isEnabled)
+        self.Up_toolButton.setEnabled(isEnabled)
+        self.rowChanged.emit(idx)
+
+    def MinusButtonClicked(self):
+        # Delete a plot
+        curRow = self.listWidget.currentRow()
+        ptype = self.type[curRow-self.firstplot]
+        self.listWidget.takeItem(curRow)
+        self.type.pop(curRow-self.firstplot)
+
+    def ReorderEntries(self):
+        # This function reorder the entries in the listWidget
+        if len(self.type)==1: return
+        curRow = self.listWidget.currentRow()
+        np = curRow-self.firstplot
+        if self.sender()==self.Up_toolButton: 
+        # Moves the item up
+            if np==0: return
+            curItem = self.listWidget.takeItem(curRow)
+            self.listWidget.insertItem(curRow-1, curItem)
+            self.listWidget.setCurrentRow(curRow-1)
+            self.type[np-1], self.type[np] = self.type[np], self.type[np-1]
+            self.plotOrder.emit(curRow,"up")
+        else:    
+        # Moves the item down
+            if (np==self.listWidget.count()-self.firstplot-1): return
+            curItem = self.listWidget.takeItem(curRow);
+            self.listWidget.insertItem(curRow+1, curItem)
+            self.listWidget.setCurrentRow(curRow+1)
+            self.type[np+1], self.type[np] = self.type[np], self.type[np+1]
+            self.plotOrder.emit(curRow,"down")
+            
+            
+    
+    def PlusButtonClicked(self):
+        # Function to add a plot
+        if self.sender()==self.add_plot:
+            self.nplot += 1
+            name = ["    Plot"+str(self.nplot), "PLOT"]
+        elif self.sender()==self.add_func:
+            self.nfunc += 1
+            name = ["    Function"+str(self.nfunc), "FUNC"]
+        if self.sender()==self.add_hist:
+            self.nhist += 1
+            name = ["    Histogram"+str(self.nhist), "HIST"]
+        
+        # Add the item to the qlistwidget
+        item = QtWidgets.QListWidgetItem(name[0])
+        item.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+        self.listWidget.addItem(item)
+
+        # Send a signal to the parent widget to add a plot tab
+        self.plotAdded.emit(name[1],self.firstplot+len(self.type))
+        self.type.append(name[1])
+
+        
+        
+    def getNumberOfPlots(self):
+        # This function return the total number of plots and the number of each type
+        np,nf,nh = self.type.count("PLOT"),self.type.count("FUNC"),self.type.count("HIST")
+        ntot = np+nf+nh
+        return ntot, np, nf, nh
+        
 
 class Filein_Widget(QtWidgets.QWidget):
 # This class is just a container for an array (lineedit + button Open + button Add)
@@ -170,10 +289,7 @@ class ColorPicker (QtWidgets.QWidget):
         
         # Some non standard size policies
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHeightForWidth(self.color_toolButton.sizePolicy().hasHeightForWidth())
         self.color_toolButton.setSizePolicy(sizePolicy)
-        
-        
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         self.hex_lineEdit.setSizePolicy(sizePolicy)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
@@ -382,7 +498,7 @@ class Axes_Tab (QWidget,Ui_Axes_tabwidget):
         cBox.setEnabled(checked)
         
 class Plot_Tab (QWidget,Ui_Plot1D_tabwidget):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, plottype="PLOT"):
         super(Plot_Tab, self).__init__(parent)
         self.setupUi(self)
         self.parent = parent
@@ -425,32 +541,50 @@ class Plot1DWindow(QWidget, Ui_Plot1D_Window):
         self.setupUi(self)
     
         self.file_inp = Filein_Widget(self)
-        self.Main_gridLayout.addWidget(self.file_inp,0,0,1,0)
+        self.Main_gridLayout.addWidget(self.file_inp,0,0,1,4)
+        
+        self.selector = Selector(self)       
+        self.Main_gridLayout.addWidget(self.selector,1,0,1,1)
         
         self.GeneralFont = FontPicker(self)
         self.GeneralSettings_gridLayout.addWidget(self.GeneralFont, 1, 0, 1, 2)
-        
 
-        
         self.axes_tab = Axes_Tab()
         self.stackedWidget.insertWidget(1,self.axes_tab)
         
-        self.plot_tab = Plot_Tab(self)
-        self.stackedWidget.insertWidget(4,self.plot_tab)
-        
-
-        self.pippo = QtWidgets.QToolButton(self.listWidget)
         
         
-        self.listWidget.currentRowChanged[int].connect(self.Diocare)
+        self.plot_tab = []
+        self.addPlot_tab("PLOT",self.selector.firstplot)
+                
+        self.selector.rowChanged[int].connect(self.Diocare)
+        self.selector.plotAdded[str,int].connect(self.addPlot_tab)
+        self.selector.plotOrder[int,str].connect(self.reorderPlot_tab)
         
+        
+        self.stackedWidget.setCurrentIndex(0)
+        
+    def addPlot_tab (self, plottype, idx):
+        self.plot_tab.append(Plot_Tab(self,plottype=plottype))
+        self.stackedWidget.insertWidget(idx,self.plot_tab[-1])
+    
+    def reorderPlot_tab (self, idx, direc):
+        print (idx, direc)
+        np = idx-self.selector.firstplot
+        curWid = self.stackedWidget.widget(idx)
+        if direc.lower()=="up": insrow, insn = idx-1, np-1
+        else: insrow, insn = idx+1, np+1
+        self.stackedWidget.insertWidget(insrow, curWid)
+        self.stackedWidget.setCurrentIndex(insrow)
+        self.plot_tab[insn], self.plot_tab[np] = self.plot_tab[np], self.plot_tab[insn]
+        
+        
+        print (self.stackedWidget.count())
+    
     def Diocare (self,idx):
         self.stackedWidget.setCurrentIndex(idx)
         
-        # Connect all the slots to the correspondent functions
-        #self.File_lineEdit.editingFinished.connect(self.FileChanged)
-        #self.X_file_comboBox.currentIndexChanged[int].connect(self.X_fileChanged)
-        #self.Y_file_comboBox.currentIndexChanged[int].connect(self.Y_fileChanged)
+
 
     def grancazzo(self):
         fn = self.file_inp.file_name
