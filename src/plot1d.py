@@ -5,13 +5,15 @@
 
 import os
 import numpy as np
-from PyQt5.QtWidgets import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
 from moc.ui_plot1d import Ui_Plot1D_Window
 from moc.ui_plot1d_tabw import Ui_Plot1D_tabwidget
 from moc.ui_axes_tabw import Ui_Axes_tabwidget
 from moc.ui_right_selector import Ui_Right_Selector
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtWidgets, QtCore, QtGui
 
 class Selector(QtWidgets.QWidget, Ui_Right_Selector):
     
@@ -29,10 +31,10 @@ class Selector(QtWidgets.QWidget, Ui_Right_Selector):
                 
         # Adding a contextual menu to the Plus button:
         # The user can choose between a new plot, function or histogram
-        self.Plus_Menu = QtWidgets.QMenu(self)
-        self.add_plot = QtWidgets.QAction("Add plot",self)
-        self.add_func = QtWidgets.QAction("Add function",self)
-        self.add_hist = QtWidgets.QAction("Add histogram",self)
+        self.Plus_Menu = QMenu(self)
+        self.add_plot = QAction("Add plot",self)
+        self.add_func = QAction("Add function",self)
+        self.add_hist = QAction("Add histogram",self)
 
         self.Plus_Menu.addAction(self.add_plot)
         self.Plus_Menu.addAction(self.add_func)
@@ -118,7 +120,7 @@ class Selector(QtWidgets.QWidget, Ui_Right_Selector):
             name = ["    Histogram"+str(self.nhist), "HIST"]
         
         # Add the item to the qlistwidget
-        item = QtWidgets.QListWidgetItem(name[0])
+        item = QListWidgetItem(name[0])
         item.setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
         self.listWidget.addItem(item)
 
@@ -166,10 +168,17 @@ class Filein_Widget(QtWidgets.QWidget):
         self.File_pushButton[r].clicked.connect(self.openDialog)
         
         # Now creating the "Add" toolButton with a popup menu.
+<<<<<<< HEAD
+        # The QMenu as two actions: Add and Remove a file
+        self.File_Menu.append(QMenu(self))
+        self.add_act.append(QAction("Add file",self))
+        self.rem_act.append(QAction("Remove file",self))
+=======
         # The QMenu has two actions: Add and Remove a file
         self.File_Menu.append(QtWidgets.QMenu(self))
         self.add_act.append(QtWidgets.QAction("Add file",self))
         self.rem_act.append(QtWidgets.QAction("Remove file",self))
+>>>>>>> b002e0e61a5c037ff2afbf683205b72da1b0baed
         self.add_act[r].triggered.connect(self.addFile)
         self.rem_act[r].triggered.connect(self.removeFile)
         if r==0: self.rem_act[r].setDisabled(True)
@@ -177,8 +186,8 @@ class Filein_Widget(QtWidgets.QWidget):
         self.File_Menu[r].addAction(self.rem_act[r])
         self.File_toolButton.append(QtWidgets.QToolButton(self))
         self.File_toolButton[r].setMenu(self.File_Menu[r])
-        self.File_toolButton[r].setPopupMode(QtWidgets.QToolButton.InstantPopup)
-        self.File_toolButton[r].setToolButtonStyle(QtCore.Qt.ToolButtonTextBesideIcon)
+        self.File_toolButton[r].setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+        self.File_toolButton[r].setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.File_toolButton[r].setIcon(QtGui.QIcon("icons/plus_128.png"))        
         self.Layout.addWidget(self.File_toolButton[r],r,3)
         
@@ -231,7 +240,7 @@ class FontPicker (QtWidgets.QWidget):
         self.font_label = QtWidgets.QLabel(" Font:   ")
         self.font_toolButton = QtWidgets.QToolButton()
         
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Fixed)
         self.font_toolButton.setSizePolicy(sizePolicy)
         
         # Some properties
@@ -240,8 +249,8 @@ class FontPicker (QtWidgets.QWidget):
         
         # Add GUI elements to layout
         self.Layout.addWidget(self.font_label)
-        self.Layout.addWidget(self.font_toolButton,QtCore.Qt.AlignLeft)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.Layout.addWidget(self.font_toolButton,QtCore.Qt.AlignmentFlag.AlignLeft)
+        spacerItem = QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum)
         self.Layout.addItem(spacerItem)
         
         # Slots
@@ -250,7 +259,7 @@ class FontPicker (QtWidgets.QWidget):
     @QtCore.pyqtSlot()
     def openFontDialog(self):
         # Open the dialog and get the selected color
-        self.font = QtWidgets.QFontDialog.getFont(self.font)[0]
+        self.font = QFontDialog.getFont(self.font)[0]
         self.updateFont(self.font)
             
     def updateFont(self,newfont):
@@ -293,19 +302,20 @@ class ColorPicker (QtWidgets.QWidget):
         self.alpha_spinBox = QtWidgets.QDoubleSpinBox()
         
         # Some non standard size policies
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        pol = QSizePolicy.Policy
+        sizePolicy = QtWidgets.QSizePolicy(pol.MinimumExpanding, pol.Fixed)
         self.color_toolButton.setSizePolicy(sizePolicy)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(pol.Maximum, pol.Fixed)
         self.hex_lineEdit.setSizePolicy(sizePolicy)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(pol.Maximum, pol.Fixed)
         self.alpha_spinBox.setSizePolicy(sizePolicy)
 
         # Some properties
         self.color_toolButton.setAutoRaise(True)
         self.color_toolButton.setFixedSize(50,20)        
         self.hex_lineEdit.setMaxLength(7)
-        self.alpha_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing)
-        self.alpha_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)        
+        self.alpha_spinBox.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignTrailing)
+        self.alpha_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.ButtonSymbols.NoButtons)        
         self.alpha_spinBox.setMaximum(1.0)
         self.alpha_spinBox.setSingleStep(0.1)
         self.alpha_spinBox.setValue(1.00)
@@ -314,14 +324,14 @@ class ColorPicker (QtWidgets.QWidget):
         
         # Add GUI elements to layout
         if longcol: self.Layout.addWidget(self.color_label)
-        self.Layout.addWidget(self.color_toolButton,QtCore.Qt.AlignLeft)     
+        self.Layout.addWidget(self.color_toolButton,QtCore.Qt.AlignmentFlag.AlignLeft)     
         if longcol:
-            self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignRight)
+            self.Layout.addWidget(self.hex_label, 0, QtCore.Qt.AlignmentFlag.AlignRight)
             self.Layout.addWidget(self.hex_lineEdit)
-            self.Layout.addWidget(self.alpha_label, 0, QtCore.Qt.AlignRight)
+            self.Layout.addWidget(self.alpha_label, 0, QtCore.Qt.AlignmentFlag.AlignRight)
             self.Layout.addWidget(self.alpha_spinBox)
         else:
-            spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+            spacerItem = QtWidgets.QSpacerItem(40, 20, pol.Expanding, pol.Minimum)
             self.Layout.addItem(spacerItem)
         
             
@@ -386,11 +396,12 @@ class LineStyleSelector (QtWidgets.QWidget):
         self.lcolor = ColorPicker(self,color=lcolor,longcol=False)
         
         # Elements Properties
-        self.lstyle_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.lwidth_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.lcolor_label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.lwidth_spinBox.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.lwidth_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.NoButtons)
+        alig = QtCore.Qt.AlignmentFlag
+        self.lstyle_label.setAlignment(alig.AlignRight|alig.AlignTrailing|alig.AlignVCenter)
+        self.lwidth_label.setAlignment(alig.AlignRight|alig.AlignTrailing|alig.AlignVCenter)
+        self.lcolor_label.setAlignment(alig.AlignRight|alig.AlignTrailing|alig.AlignVCenter)
+        self.lwidth_spinBox.setAlignment(alig.AlignRight|alig.AlignTrailing|alig.AlignVCenter)
+        self.lwidth_spinBox.setButtonSymbols(QtWidgets.QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.lstyle_comboBox.addItem("solid")
         self.lstyle_comboBox.addItem("dashed")
         self.lstyle_comboBox.addItem("dotted")
@@ -408,9 +419,9 @@ class LineStyleSelector (QtWidgets.QWidget):
         self.Layout.addWidget(self.lcolor,1,3,1,1)
 
         #Slots
-        self.lstyle_comboBox.activated[str].connect(self.LineStyleActivated)
+        #self.lstyle_comboBox.activated[str].connect(self.LineStyleActivated)
         
-        
+    @pyqtSlot(str)
     def LineStyleActivated(self, val):
         if val=='custom':
             self.lstyle_lineEdit.setHidden(False)
